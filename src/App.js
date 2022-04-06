@@ -7,6 +7,7 @@ function App() {
   // Properties
 
   const [walletAddress, setWalletAddress] = useState("");
+  const [signature, setSignature] = useState("");
 
   // Helper Functions
 
@@ -15,8 +16,8 @@ function App() {
   async function requestAccount() {
     console.log('Requesting account...');
 
-    // ❌ Check if Meta Mask Extension exists 
-    if(window.ethereum) {
+    // ❌ Check if Meta Mask Extension exists
+    if (window.ethereum) {
       console.log('detected');
 
       try {
@@ -33,12 +34,16 @@ function App() {
     }
   }
 
-  // Create a provider to interact with a smart contract
-  async function connectWallet() {
-    if(typeof window.ethereum !== 'undefined') {
+  // Sign a message
+  async function signMessage() {
+    if (typeof window.ethereum !== 'undefined') {
       await requestAccount();
 
       const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner()
+
+      const newSignature = await signer.signMessage("Hello World");
+      setSignature(newSignature);
     }
   }
 
@@ -46,12 +51,17 @@ function App() {
     <div className="App">
       <header className="App-header">
         <button
-        
-        onClick={requestAccount}
-        
+          onClick={requestAccount}
         >Request Account</button>
         <h3>Wallet Address: {walletAddress}</h3>
+        <div>
+          <button
+            onClick={signMessage}
+          >Sign Message</button>
+          <h3>Signature: {signature}</h3>
+        </div>
       </header>
+
     </div>
   );
 }
