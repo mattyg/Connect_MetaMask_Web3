@@ -49,7 +49,7 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
+      <main className="App-body">
         <button
           onClick={requestAccount}
         >Request Account</button>
@@ -60,8 +60,7 @@ function App() {
           >Sign Message</button>
           <h3>Signature: {signature}</h3>
         </div>
-      </header>
-
+      </main>
     </div>
   );
 }
