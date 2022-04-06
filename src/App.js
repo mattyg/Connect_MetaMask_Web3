@@ -7,7 +7,8 @@ function App() {
   // Properties
 
   const [walletAddress, setWalletAddress] = useState("");
-  const [signature, setSignature] = useState("");
+  const [signature, setSignature] = useState(undefined);
+  const [membraneCode, setMembraneCode] = useState(undefined);
 
   // Helper Functions
 
@@ -36,29 +37,44 @@ function App() {
 
   // Sign a message
   async function signMessage() {
-    if (typeof window.ethereum !== 'undefined') {
-      await requestAccount();
+    if (typeof window.ethereum === 'undefined') return;
+    if (!membraneCode) return;
 
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner()
+    await requestAccount();
 
-      const newSignature = await signer.signMessage("Hello World");
-      setSignature(newSignature);
-    }
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner()
+
+    const newSignature = await signer.signMessage(membraneCode);
+    setSignature(newSignature);
   }
 
   return (
     <div className="App">
       <main className="App-body">
-        <button
-          onClick={requestAccount}
-        >Request Account</button>
-        <h3>Wallet Address: {walletAddress}</h3>
         <div>
-          <button
-            onClick={signMessage}
-          >Sign Message</button>
-          <h3>Signature: {signature}</h3>
+          {walletAddress ? <h3>Connected wallet address: {walletAddress}</h3>
+            : <button
+              onClick={requestAccount}
+            >Connect Ethereum Wallet</button>
+          }
+        </div>
+
+        {walletAddress &&
+          <div>
+            <h3>Enter Membrane Proof Code</h3>
+            <input type="text" onChange={(e) => setMembraneCode(e.target.value)} />
+          </div>
+        }
+
+        <div>
+          {membraneCode &&
+            <button
+              onClick={signMessage}
+            >Sign Message</button>
+          }
+          {signature &&
+            <h3>Signature: {signature}</h3>}
         </div>
       </main>
     </div>
